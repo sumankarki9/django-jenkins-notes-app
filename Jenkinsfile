@@ -1,29 +1,34 @@
 pipeline {
-    agent any 
-    
-    stages{
-        stage("Clone Code"){
+    agent any
+
+    stages {
+        stage('Clone Code') {
             steps {
-                echo "Cloning the code"
-                git url:"https://github.com/LondheShubham153/django-notes-app.git", branch: "main"
+                echo 'Cloning the code'
+                git url:"https://github.com/ShendeShubham17/LondheShubham153-django-notes-app.git", branch: "main"
             }
         }
-        stage("Build"){
+
+        stage('Build') {
             steps {
-                echo "Building the image"
+                echo 'Building the image'
                 sh "docker build -t my-note-app ."
             }
         }
-        stage("Push to Docker Hub"){
+
+        stage('Push to Dockerhub') {
             steps {
-                echo "Pushing the image to docker hub"
-                withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-                sh "docker tag my-note-app ${env.dockerHubUser}/my-note-app:latest"
-                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                sh "docker push ${env.dockerHubUser}/my-note-app:latest"
+                echo 'Pushing the image to docker hub'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
+                sh "docker tag my-note-app ${env.DOCKERHUB_USERNAME}/my-note-app:latest"
+                sh 'docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}'
+                sh "docker push ${env.DOCKERHUB_USERNAME}/my-note-app:latest"
+        
                 }
+                
             }
         }
+
         stage("Deploy"){
             steps {
                 echo "Deploying the container"
